@@ -11,6 +11,43 @@
 \usepackage{url}
 \usepackage[htt]{hyphenat}
 
+\usepackage{pgfplots} % which is based on tikz
+\pgfplotsset{width=8cm,compat=1.9} % config the width
+\usepgfplotslibrary{external} % which is used for build the picture outside then import them to avoid repeat building.
+\tikzexternalize % which is same as up
+
+\usepackage{tikz} % 
+\usetikzlibrary{positioning} %
+\usetikzlibrary {arrows.meta,automata,positioning,shadows} % use for topo graph
+\usetikzlibrary {mindmap} % use for mindmap
+
+\usepackage{listings} % use for source code
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{ % use for source code too
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle} % use for source code too
+
 % algorithm stuff
 \usepackage[noend]{algpseudocode}
 \usepackage[ruled, vlined]{algorithm2e}
@@ -41,6 +78,194 @@
 \begin{abstract}
 In this document we describe the current approach for state synchronization and verification of committed transactions in case the active set of validators and their signatures can change periodically.
 \end{abstract}
+
+% CodeSyntaxTest-start
+\begin{lstlisting}[language=Rust, caption=Rust example]
+use async_stream::stream;
+
+use futures_util::pin_mut;
+use futures_util::stream::StreamExt;
+
+#[tokio::main]
+async fn main() {
+    let s = stream! {
+        for i in 0..3 {
+            yield i;
+        }
+    };
+
+    pin_mut!(s); // needed for iteration
+
+    while let Some(value) = s.next().await {
+        println!("got {}", value);
+    }
+}
+\end{lstlisting}
+% CodeSyntaxTest-end
+
+% Math Syntax Test-start
+\begin{equation} \label{eq_name}
+\begin{split}
+A & = \frac{\pi r^2}{2} \\
+ & = \frac{1}{2} \pi r^2
+\end{split}
+\end{equation}
+
+The beautiful equation \ref{eq_name} is known as above.
+% Math Syntax Test-end
+
+% GraphTest-start
+% -------------------------------------------------1
+\begin{tikzpicture}
+\begin{axis}[
+    title=Example using the mesh parameter,
+    hide axis,
+    colormap/cool,
+]
+\addplot3[
+    mesh,
+    samples=50,
+    domain=-8:8,
+]
+{sin(deg(sqrt(x^2+y^2)))/sqrt(x^2+y^2)};
+\addlegendentry{\(\frac{sin(r)}{r}\)}
+\end{axis}
+\end{tikzpicture}
+
+% -------------------------------------------------2
+\begin{tikzpicture}
+\begin{axis}
+\addplot[color=red]{exp(x)};
+\end{axis}
+\end{tikzpicture}
+%Here ends the 2D plot
+\hskip 5pt
+%Here begins the 3D plot
+\begin{tikzpicture}
+\begin{axis}
+\addplot3[
+    surf,
+]
+{exp(-x^2-y^2)*x};
+\end{axis}
+\end{tikzpicture}
+
+% -------------------------------------------------3
+\begin{tikzpicture}
+\begin{axis}[
+    axis lines = left,
+    xlabel = \(x\),
+    ylabel = {\(f(x)\)},
+]
+%Below the red parabola is defined
+\addplot [
+    domain=-10:10, 
+    samples=100, 
+    color=red,
+]
+{x^2 - 2*x - 1};
+\addlegendentry{\(x^2 - 2x - 1\)}
+%Here the blue parabola is defined
+\addplot [
+    domain=-10:10, 
+    samples=100, 
+    color=blue,
+    ]
+    {x^2 + 2*x + 1};
+\addlegendentry{\(x^2 + 2x + 1\)}
+
+\end{axis}
+\end{tikzpicture}
+
+% -------------------------------------------------4
+\begin{tikzpicture}
+\begin{axis}
+\addplot3[
+    surf,
+] 
+coordinates {
+(0,0,0) (0,1,0) (0,2,0)
+
+(1,0,0) (1,1,0.6) (1,2,0.7)
+
+(2,0,0) (2,1,0.7) (2,2,1.8)
+};
+\end{axis}
+\end{tikzpicture}
+
+% -------------------------------------------------5
+\begin{tikzpicture}[
+roundnode/.style={circle, draw=green!60, fill=green!5, very thick, minimum size=7mm},
+squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+]
+%Nodes
+\node[squarednode]      (maintopic)                              {2};
+\node[roundnode]        (uppercircle)       [above=of maintopic] {1};
+\node[squarednode]      (rightsquare)       [right=of maintopic] {3};
+\node[roundnode]        (lowercircle)       [below=of maintopic] {4};
+
+%Lines
+\draw[->] (uppercircle.south) -- (maintopic.north);
+\draw[->] (maintopic.east) -- (rightsquare.west);
+\draw[->] (rightsquare.south) .. controls +(down:7mm) and +(right:7mm) .. (lowercircle.east);
+\end{tikzpicture}
+
+% -------------------------------------------------6
+\begin{tikzpicture}[->,>={Stealth[round]},shorten >=1pt,auto,node distance=2.8cm,on grid,semithick,every 
+    state/.style={fill=red,draw=none,circular drop shadow,text=white}]
+
+  \node[initial,state] (A)                    {$q_a$};
+  \node[state]         (B) [above right=of A] {$q_b$};
+  \node[state]         (D) [below right=of A] {$q_d$};
+  \node[state]         (C) [below right=of B] {$q_c$};
+  \node[state]         (E) [below=of D]       {$q_e$};
+
+  \path (A) edge              node {0,1,L1} (B)
+            edge              node {1,1,R} (C)
+        (B) edge [loop above] node {1,1,L} (B)
+            edge              node {0,1,L} (C)
+        (C) edge              node {0,1,L} (D)
+            edge [bend left]  node {1,0,R} (E)
+        (D) edge [loop below] node {1,1,R} (D)
+            edge              node {0,1,R} (A)
+        (E) edge [bend left]  node {1,0,R} (A);
+
+   \node [right=1cm,text width=8cm] at (C)
+   {
+     The current candidate for the busy beaver for five states. It is
+     presumed that this Turing machine writes a maximum number of
+     $1$'s before halting among all Turing machines with five states
+     and the tape alphabet $\{0, 1\}$. Proving this conjecture is an
+     open research problem.
+   };
+\end{tikzpicture}
+
+% -------------------------------------------------7
+\begin{tikzpicture}
+  \path[mindmap,concept color=black,text=white]
+    node[concept] {Computer Science}
+    [clockwise from=0]
+    % note that `sibling angle' can only be defined in
+    % `level 1 concept/.append style={}'
+    child[concept color=green!50!black] {
+      node[concept] {practical}
+      [clockwise from=90]
+      child { node[concept] {algorithms} }
+      child { node[concept] {data structures} }
+      child { node[concept] {pro\-gramming languages} }
+      child { node[concept] {software engineer\-ing} }
+    }
+    % note that the `concept color' is passed to the `child'(!)
+    child[concept color=blue] {
+      node[concept] {applied}
+      [clockwise from=-30]
+      child { node[concept] {databases} }
+      child { node[concept] {WWW} }
+    }
+    child[concept color=red] { node[concept] {technical} }
+    child[concept color=orange] { node[concept] {theoretical} };
+\end{tikzpicture}
+% GraphTest-end
 
 \section{Introduction}
 \label{intro}
